@@ -166,9 +166,19 @@ We're not using bleeding-edge tech. We're using **boring technology that works**
 To be fair, Next.js is a good choice when:
 
 - Your team already knows it deeply (not just "knows JavaScript")
-- You're building a content-heavy marketing site
-- You need SSG for SEO-critical pages
-- You're integrating with a Vercel-optimized stack (headless CMS, etc.)
+- You're building a content-heavy marketing site with hundreds of static pages
+- You're all-in on Vercel's ecosystem (headless CMS, edge functions, etc.)
+
+**What about SEO?** PeARL handles it. `live_react` supports full SSR:
+
+```elixir
+# config/prod.exs
+config :live_react,
+  ssr_module: LiveReact.SSR.NodeJS,
+  ssr: true
+```
+
+Your React components render server-side first (crawlable HTML for search engines), then hydrate on the client. Same pattern as Next.js SSR — without the three-runtime complexity.
 
 PeARL is not the right choice for everyone. It's the right choice for:
 
