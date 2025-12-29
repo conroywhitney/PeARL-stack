@@ -1,5 +1,7 @@
 # PeARL Stack
 
+<img src="docs/assets/pearl-stack-logo-441188.png" alt="PeARL Stack Logo" width="175" height="175">
+
 **P**hoenix · **e**vents · **A**sh · **R**eact · **L**iveView
 
 The beginner-friendly, vibe-proof stack.
