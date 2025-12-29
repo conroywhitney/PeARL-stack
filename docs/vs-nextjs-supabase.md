@@ -218,5 +218,4 @@ If you've been frustrated by the JS ecosystem's footguns, PeARL might be worth t
 
 ## Next Steps
 
-- [Architecture](./architecture) — See how PeARL layers work
-- [Getting Started](./getting-started) — Try it yourself
+- [Getting Started](../getting-started) — Try it yourself

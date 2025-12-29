@@ -347,6 +347,5 @@ Need to change how "complete" works? Change the Ash action. LiveView and React d
 
 ## Next Steps
 
-- [Why PeARL?](./why) — The philosophy behind these choices
-- [vs. Next.js](./vs-nextjs) — How this compares
-- [Getting Started](./getting-started) — Build something
+- [vs. Next.js + Supabase](../vs-nextjs-supabase) — How this compares
+- [Getting Started](../getting-started) — Build something

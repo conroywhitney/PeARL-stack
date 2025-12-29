@@ -244,6 +244,6 @@ The goal isn't clever code. The goal is code you can read six months later—or 
 
 ## Next Steps
 
-- [Architecture](./architecture) — See how the layers work together
-- [vs. Next.js](./vs-nextjs) — Detailed comparison
-- [Getting Started](./getting-started) — Start building
+- [Architecture](../architecture) — See how the layers work together
+- [vs. Next.js + Supabase](../vs-nextjs-supabase) — Detailed comparison
+- [Getting Started](../getting-started) — Start building

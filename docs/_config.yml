@@ -8,7 +8,7 @@ header_pages:
   - index.md
   - why.md
   - architecture.md
-  - vs-nextjs.md
+  - vs-nextjs-supabase.md
   - getting-started.md
 
 plugins:

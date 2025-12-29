@@ -90,7 +90,7 @@ PeARL is designed for:
 
 - [Why PeARL?](./why) — The philosophy and reasoning
 - [Architecture](./architecture) — How the layers work together
-- [vs. Next.js](./vs-nextjs) — Honest comparison with the JS path
+- [vs. Next.js + Supabase](./vs-nextjs-supabase) — Honest comparison with the JS path
 - [Getting Started](./getting-started) — Start building
 
 ---
