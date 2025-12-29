@@ -23,7 +23,7 @@ PeARL is an opinionated web stack that locks away the footguns and maximizes rea
 
 - [Why PeARL?](https://conroywhitney.github.io/PeARL-stack/why/) — The philosophy
 - [Architecture](https://conroywhitney.github.io/PeARL-stack/architecture/) — How it works
-- [vs. Next.js](https://conroywhitney.github.io/PeARL-stack/vs-nextjs/) — Honest comparison
+- [vs. Next.js + Supabase](https://conroywhitney.github.io/PeARL-stack/vs-nextjs-supabase/) — Honest comparison
 - [Getting Started](https://conroywhitney.github.io/PeARL-stack/getting-started/) — Build something
 
 ## The Stack
