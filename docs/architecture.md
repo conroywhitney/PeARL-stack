@@ -1,6 +1,6 @@
 ---
 layout: page
-title: PeARL Architecture
+title: Architecture
 permalink: /architecture/
 nav_order: 3
 ---

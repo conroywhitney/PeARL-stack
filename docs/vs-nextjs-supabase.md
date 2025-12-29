@@ -1,6 +1,6 @@
 ---
 layout: page
-title: PeARL vs. Next.js + Supabase
+title: vs. Next.js + Supabase
 permalink: /vs-nextjs/
 nav_order: 4
 ---
