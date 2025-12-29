@@ -105,25 +105,53 @@ defmodule MyApp.Todos.Todo do
 
   attributes do
     uuid_primary_key :id
+
+    # allow_nil?: false = this field is REQUIRED
+    # Ash will reject creates/updates with empty titles
+    # No "undefined" or "" sneaking into your database
     attribute :title, :string, allow_nil?: false
+
+    # default: false = new todos start incomplete
+    # This is set at the Ash layer, not the database
+    # So it works even if you forget the DB default
     attribute :completed, :boolean, default: false
+
+    # Adds inserted_at and updated_at automatically
     timestamps()
   end
 
   actions do
+    # defaults [:read, :destroy] gives you:
+    # - list all todos
+    # - get a single todo by id
+    # - delete a todo
     defaults [:read, :destroy]
 
     create :create do
+      # FOOTGUN AVOIDED: `accept` is an ALLOWLIST
+      # Only :title can be set on create
+      # Even if someone sends {title: "x", completed: true},
+      # the completed field is IGNORED
+      # No "mass assignment" vulnerabilities
       accept [:title]
     end
 
     update :complete do
+      # This action does ONE thing: mark as completed
+      # You can't pass arbitrary fields to modify
+      # The behavior is explicit and predictable
       change set_attribute(:completed, true)
     end
   end
 
-  # Start with open policies for learning
-  # (Tighten these before production!)
+  # POLICIES: Who can do what
+  # Start open for learning, then tighten for production!
+  #
+  # IMPORTANT: In production, you'd write:
+  #   policy action_type(:read) do
+  #     authorize_if relates_to_actor_via(:user)
+  #   end
+  # This ensures users only see THEIR todos (no IDOR bugs)
   policies do
     policy always() do
       authorize_if always()
@@ -159,11 +187,20 @@ mix ash.migrate
 defmodule MyAppWeb.TodoLive do
   use MyAppWeb, :live_view
 
+  # mount/3 runs when a user visits this page
+  # It's like "componentDidMount" but on the server
   def mount(_params, _session, socket) do
+    # Fetch all todos from the database via Ash
+    # The ! means "raise an error if this fails" (fail fast, don't hide bugs)
     todos = MyApp.Todos.Todo |> Ash.read!()
+
+    # assign/3 stores data in the socket's state
+    # This becomes @todos in your template
     {:ok, assign(socket, :todos, todos)}
   end
 
+  # render/1 returns the HTML template
+  # The ~H sigil is "HEEx" — HTML + Elixir
   def render(assigns) do
     ~H"""
     <.react
@@ -171,23 +208,40 @@ defmodule MyAppWeb.TodoLive do
       todos={@todos}
     />
     """
+    # ↑ That's it! @todos flows to React as props
+    # When @todos changes, React automatically re-renders
+    # No handleEvent needed on the React side
   end
 
+  # handle_event/3 receives events from React's pushEvent()
+  # "create_todo" matches pushEvent("create_todo", {...})
+  # %{"title" => title} pattern-matches the payload and extracts `title`
   def handle_event("create_todo", %{"title" => title}, socket) do
+    # Create a new todo via Ash
+    # for_create/3 builds a "changeset" (a pending change)
+    # Ash.create!/1 executes it and saves to database
     MyApp.Todos.Todo
     |> Ash.Changeset.for_create(:create, %{title: title})
     |> Ash.create!()
 
+    # Re-fetch all todos and update assigns
+    # live_react will automatically push new props to React
     todos = MyApp.Todos.Todo |> Ash.read!()
     {:noreply, assign(socket, :todos, todos)}
+    # ↑ :noreply means "don't send a separate reply"
+    # The assign change IS the reply (via live_react)
   end
 
   def handle_event("complete_todo", %{"id" => id}, socket) do
+    # Fetch the specific todo by ID
     MyApp.Todos.Todo
     |> Ash.get!(id)
+    # Build an update changeset using the :complete action
+    # Remember: :complete can ONLY set completed=true (by design!)
     |> Ash.Changeset.for_update(:complete, %{})
     |> Ash.update!()
 
+    # Re-fetch and update — React re-renders automatically
     todos = MyApp.Todos.Todo |> Ash.read!()
     {:noreply, assign(socket, :todos, todos)}
   end
@@ -200,21 +254,35 @@ end
 // assets/react-components/TodoList.jsx
 import React, { useState } from 'react'
 
+// NOTICE: No useEffect! No data fetching! No global state!
+//
+// `todos` comes from LiveView as a prop (automatically updated)
+// `pushEvent` is injected by live_react to send events to the server
+//
+// This is React as it was meant to be: a UI rendering library
 export default function TodoList({ todos, pushEvent }) {
+  // Local state is fine for UI-only concerns (like form input)
   const [newTitle, setNewTitle] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (newTitle.trim()) {
+      // pushEvent sends to LiveView's handle_event/3
+      // LiveView will create the todo and update assigns
+      // Then live_react pushes new `todos` prop back to us
+      // We re-render automatically — no manual state management!
       pushEvent('create_todo', { title: newTitle })
       setNewTitle('')
     }
   }
 
   const handleComplete = (id) => {
+    // Same pattern: tell the server what happened
+    // Server updates database, assigns change, we re-render
     pushEvent('complete_todo', { id })
   }
 
+  // Pure rendering — just show what we're given
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">My Todos</h1>

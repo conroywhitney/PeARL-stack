@@ -114,16 +114,35 @@ LiveView coordinates everything.
 defmodule MyAppWeb.TodoLive do
   use MyAppWeb, :live_view
 
+  # mount/3 runs once when user connects
+  # This is your "page load" — but over WebSocket, not HTTP
   def mount(_params, _session, socket) do
+    # FOOTGUN AVOIDED: We pass `actor:` to every Ash call
+    # This isn't optional — Ash policies will REJECT the call without it
+    # In JS-land, forgetting auth checks silently exposes data
     todos = MyApp.Todos.list_todos!(actor: socket.assigns.current_user)
+
+    # assign/3 stores data in the socket
+    # When this changes, live_react auto-updates your React props
     {:ok, assign(socket, :todos, todos)}
   end
 
+  # handle_event/3 receives events from React's pushEvent()
+  # The string "complete_todo" matches what React sends
+  # The map %{"id" => id} pattern-matches the payload
   def handle_event("complete_todo", %{"id" => id}, socket) do
+    # FOOTGUN AVOIDED: We fetch the todo WITH the actor
+    # Ash policies ensure users can only access their own todos
+    # No "IDOR vulnerability" possible — it's enforced at the data layer
     todo = MyApp.Todos.get_todo!(id, actor: socket.assigns.current_user)
+
+    # FOOTGUN AVOIDED: The action name :complete is explicit
+    # You can't accidentally call the wrong action or pass wrong fields
+    # Ash validates everything before touching the database
     MyApp.Todos.complete_todo!(todo, actor: socket.assigns.current_user)
 
-    # Re-fetch and push updated list
+    # Re-fetch the list and update assigns
+    # live_react sees the change and pushes new props to React
     todos = MyApp.Todos.list_todos!(actor: socket.assigns.current_user)
     {:noreply, assign(socket, :todos, todos)}
   end
@@ -154,32 +173,58 @@ defmodule MyApp.Todos.Todo do
     domain: MyApp.Todos,
     data_layer: AshPostgres.DataLayer
 
+  # ATTRIBUTES: What fields exist on this resource
+  # This is your "schema" — but with built-in validations
   attributes do
     uuid_primary_key :id
+
+    # FOOTGUN AVOIDED: `allow_nil?: false` means the database AND Ash
+    # will reject empty titles. No "undefined" sneaking through.
     attribute :title, :string, allow_nil?: false
+
     attribute :completed_at, :utc_datetime
+
+    # timestamps() adds inserted_at and updated_at automatically
+    # No forgetting to add these, no inconsistent naming
     timestamps()
   end
 
+  # ACTIONS: The ONLY ways to interact with this resource
+  # There's no "raw SQL" backdoor. Every operation goes through here.
   actions do
+    # defaults [:read, :destroy] gives you basic list/get/delete
     defaults [:read, :destroy]
 
+    # FOOTGUN AVOIDED: `accept [:title]` is an allowlist
+    # Even if someone sends {title: "x", is_admin: true},
+    # the is_admin field is IGNORED — not "mass assigned"
+    # Rails devs know this pain. Ash prevents it by default.
     create :create do
       accept [:title]
+      # Automatically associate this todo with whoever created it
       change relate_actor(:user)
     end
 
+    # FOOTGUN AVOIDED: This action ONLY sets completed_at
+    # You can't accidentally modify other fields through this action
+    # The behavior is explicit and auditable
     update :complete do
       change set_attribute(:completed_at, &DateTime.utc_now/0)
     end
   end
 
+  # POLICIES: Who can do what — DENY BY DEFAULT
+  # If no policy matches, the action is REJECTED
+  # Forget to add a policy? Action fails. Data stays safe.
   policies do
-    # Deny by default — must explicitly authorize
+    # FOOTGUN AVOIDED: Users can only read their OWN todos
+    # This isn't a "reminder to check" — it's ENFORCED
+    # No IDOR vulnerabilities possible
     policy action_type(:read) do
       authorize_if relates_to_actor_via(:user)
     end
 
+    # Same for completing — only the owner can complete their todo
     policy action(:complete) do
       authorize_if relates_to_actor_via(:user)
     end
