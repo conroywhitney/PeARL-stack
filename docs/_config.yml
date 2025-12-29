@@ -1,0 +1,15 @@
+title: PeARL Stack
+description: The beginner-friendly, vibe-proof stack for building real applications
+theme: minima
+baseurl: "/PeARL-stack"
+url: "https://conroywhitney.github.io"
+
+header_pages:
+  - index.md
+  - why.md
+  - architecture.md
+  - vs-nextjs.md
+  - getting-started.md
+
+plugins:
+  - jekyll-seo-tag
