@@ -5,8 +5,6 @@ permalink: /why/
 nav_order: 2
 ---
 
-# Why PeARL?
-
 Every technology choice in PeARL was made to answer one question:
 
 > **What helps beginners finish their apps?**

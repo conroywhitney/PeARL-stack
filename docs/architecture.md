@@ -1,11 +1,9 @@
 ---
 layout: page
-title: Architecture
+title: PeARL Architecture
 permalink: /architecture/
 nav_order: 3
 ---
-
-# PeARL Architecture
 
 Four layers. Unidirectional dependencies. No spaghetti.
 

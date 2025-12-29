@@ -1,11 +1,9 @@
 ---
 layout: page
-title: Getting Started
+title: Getting Started with PeARL
 permalink: /getting-started/
 nav_order: 5
 ---
-
-# Getting Started with PeARL
 
 Ready to build something? Here's how to start.
 

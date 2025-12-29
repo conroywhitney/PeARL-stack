@@ -4,8 +4,6 @@ title: PeARL Stack
 nav_order: 1
 ---
 
-# PeARL Stack
-
 **P**hoenix · **e**vents · **A**sh · **R**eact · **L**iveView
 
 The beginner-friendly, vibe-proof stack where the footguns have been locked away.

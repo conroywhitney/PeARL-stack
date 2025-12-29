@@ -1,11 +1,9 @@
 ---
 layout: page
-title: vs. Next.js
+title: PeARL vs. Next.js + Supabase
 permalink: /vs-nextjs/
 nav_order: 4
 ---
-
-# PeARL vs. Next.js + Supabase
 
 An honest comparison. No FUD, just reality.
 
