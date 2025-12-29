@@ -1,7 +1,7 @@
 ---
 layout: page
 title: vs. Next.js + Supabase
-permalink: /vs-nextjs/
+permalink: /vs-nextjs-supabase/
 nav_order: 4
 ---
 
