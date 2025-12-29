@@ -4,6 +4,8 @@ title: PeARL Stack
 nav_order: 1
 ---
 
+<img src="./assets/pearl-stack-logo-441188.png" alt="PeARL Stack Logo" width="175" height="175">
+
 **P**hoenix · **e**vents · **A**sh · **R**eact · **L**iveView
 
 The beginner-friendly, vibe-proof stack where the footguns have been locked away.
