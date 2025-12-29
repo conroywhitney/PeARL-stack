@@ -118,19 +118,26 @@ Just React. Rendering things. Responding to events.
 
 **The key:** LiveView owns the state. React just renders it.
 
-```javascript
-// LiveView tells you what to show
-handleEvent("todos_updated", ({ todos }) => {
-  setTodos(todos)  // Just render it
-})
-
-// You tell LiveView what happened
-<button onClick={() => pushEvent("complete_todo", { id: todo.id })}>
-  Done
-</button>
+```jsx
+// Your component receives props directly from LiveView
+function TodoList({ todos, pushEvent }) {
+  return (
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id}>
+          {todo.title}
+          {/* Tell LiveView what happened */}
+          <button onClick={() => pushEvent("complete_todo", { id: todo.id })}>
+            Done
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+}
 ```
 
-No useEffect loops. No stale closures. No "why did this re-render 47 times?"
+When LiveView updates `@todos`, your component automatically re-renders with new props. No `handleEvent`. No `useEffect`. No state sync bugs.
 
 ---
 
@@ -151,12 +158,14 @@ Browser                    Server
    │                          │
    │──pushEvent("add_item")──▶│
    │                          │ (runs Ash action)
-   │                          │ (updates state)
-   │◀──handleEvent("updated")─│
+   │                          │ (updates assigns)
+   │◀───props auto-update─────│
    │                          │
    └──────────────────────────┘
         One WebSocket
 ```
+
+`live_react` handles the plumbing. You just update assigns in LiveView, and React components automatically receive new props.
 
 Compare this to the JS approach:
 - REST call

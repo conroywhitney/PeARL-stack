@@ -235,6 +235,7 @@ export default function TodoList({ todos, pushEvent }) {
         </button>
       </form>
 
+      {/* todos prop comes from LiveView — always fresh, always in sync */}
       <ul className="space-y-2">
         {todos.map(todo => (
           <li

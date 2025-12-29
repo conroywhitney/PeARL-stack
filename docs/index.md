@@ -37,7 +37,7 @@ Each layer can only call down. No spaghetti. No mystery re-renders. No "works on
 | Letter | Technology | Role |
 |--------|------------|------|
 | **P** | [Phoenix](https://phoenixframework.org/) | Web framework built for real-time, on the battle-tested BEAM |
-| **e** | events | The entire API: `pushEvent` down, `handleEvent` up |
+| **e** | events | The entire API: `pushEvent` down, props auto-update up |
 | **A** | [Ash](https://ash-hq.org/) | Declarative domain modeling with deny-by-default permissions |
 | **R** | [React](https://react.dev/) | UI components, as originally intended—reactive, not state-managing |
 | **L** | [LiveView](https://hexdocs.pm/phoenix_live_view/) | WebSocket state coordination, progressive re-renders |
@@ -50,17 +50,18 @@ The lowercase **e** is intentional. Events aren't a proper noun—they're the ph
 
 Your entire client-server contract is:
 
-```javascript
-// React → Server
+```jsx
+// React → Server (you send events)
 pushEvent("create_todo", { title: "Buy milk" })
 
-// Server → React
-handleEvent("todo_created", (todo) => setTodos([...todos, todo]))
+// Server → React (props auto-update)
+<.react name="TodoList" todos={@todos} />
+// When @todos changes, your component re-renders automatically
 ```
 
 No REST. No GraphQL. No CORS. No API versioning. No caching bugs.
 
-Just events in, events out.
+Just `pushEvent` up, props down.
 
 ---
 

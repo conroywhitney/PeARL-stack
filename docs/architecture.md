@@ -18,12 +18,12 @@ Four layers. Unidirectional dependencies. No spaghetti.
 │                     REACT COMPONENTS                         │
 │                                                              │
 │   • Pure UI rendering                                        │
-│   • Receives props from LiveView                             │
+│   • Receives props from LiveView (auto-updates!)             │
 │   • Sends events via pushEvent()                             │
 │   • No business logic                                        │
 │                                                              │
 ├──────────────────────────┬──────────────────────────────────┤
-│        pushEvent()       │         handleEvent()             │
+│        pushEvent()       │       props auto-update           │
 │            ↓             │              ↑                    │
 ├──────────────────────────┴──────────────────────────────────┤
 │                         LIVEVIEW                             │
@@ -31,7 +31,7 @@ Four layers. Unidirectional dependencies. No spaghetti.
 │   • Owns server-side state                                   │
 │   • Handles events from React                                │
 │   • Calls Ash actions                                        │
-│   • Pushes updates to React                                  │
+│   • Updates assigns → React auto-rerenders                   │
 │                                                              │
 ├─────────────────────────────────────────────────────────────┤
 │                       ASH DOMAINS                            │
@@ -135,7 +135,7 @@ end
 - Owns server-side state
 - Handles events from React
 - Calls Ash actions (with actor for authorization)
-- Pushes updates back to React
+- Updates assigns → `live_react` auto-updates React props
 
 **What LiveView doesn't do:**
 - Contain business logic
@@ -259,20 +259,22 @@ User clicks "Complete"
         │ Response bubbles up
         ▼
 ┌─────────────────────────────────────────┐
-│ LiveView: assigns updated todos         │
-│   → pushes to React via handleEvent     │
+│ LiveView: assign(socket, :todos, todos) │
+│   → live_react detects change           │
 └─────────────────────────────────────────┘
         │
-        │ WebSocket
+        │ Props auto-update via WebSocket
         ▼
 ┌─────────────────────────────────────────┐
-│ React: handleEvent receives new todos   │
-│   → re-renders with updated list        │
+│ React: receives new todos as props      │
+│   → re-renders automatically            │
 └─────────────────────────────────────────┘
         │
         ▼
 User sees completed todo
 ```
+
+**The magic:** You don't write `handleEvent` in React for data updates. When LiveView assigns change, `live_react` automatically sends the new props to your component. React just re-renders with fresh data.
 
 ---
 
